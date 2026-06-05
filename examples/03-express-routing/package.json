@@ -1,0 +1,21 @@
+{
+  "name": "03-express-routing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable Express routing examples for beginners.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "keywords": [
+    "express",
+    "routing",
+    "api",
+    "learning"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

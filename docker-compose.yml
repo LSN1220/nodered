@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  nodered:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nodered:v1.0
+    restart: always
+    volumes:
+      - ./nodered-data:/data
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+    ports:
+      - 1880:1880/tcp
+

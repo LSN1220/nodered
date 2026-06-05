@@ -1,0 +1,5 @@
+FROM nodered/node-red:1.3.5
+
+COPY nodered-data/ /data
+
+RUN cd /data && npm install

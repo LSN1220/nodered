@@ -1,0 +1,1 @@
+Node.js async code becomes easier to understand when you run small examples.
