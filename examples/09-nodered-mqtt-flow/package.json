@@ -1,0 +1,19 @@
+{
+  "name": "09-nodered-mqtt-flow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable Node-RED MQTT flow example with Docker Compose.",
+  "main": "scripts/verify-flows.js",
+  "scripts": {
+    "verify": "node scripts/verify-flows.js"
+  },
+  "keywords": [
+    "node-red",
+    "mqtt",
+    "iot",
+    "docker-compose",
+    "learning"
+  ],
+  "author": "",
+  "license": "MIT"
+}

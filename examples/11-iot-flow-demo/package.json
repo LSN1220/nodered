@@ -1,0 +1,27 @@
+{
+  "name": "11-iot-flow-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable IoT flow demo with Node-RED, MQTT, Express, and SQLite.",
+  "main": "app/src/app.js",
+  "scripts": {
+    "start": "node app/src/app.js",
+    "seed": "node app/src/scripts/seed.js",
+    "smoke": "node app/src/smoke-test.js",
+    "verify": "node scripts/verify-flows.js"
+  },
+  "keywords": [
+    "node-red",
+    "mqtt",
+    "iot",
+    "express",
+    "sqlite",
+    "learning"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,20 @@
+services:
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    container_name: nodered-mqtt-flow-broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  nodered:
+    image: nodered/node-red:3.1.11
+    container_name: nodered-mqtt-flow-demo
+    depends_on:
+      - mqtt
+    ports:
+      - "1882:1880"
+    volumes:
+      - ./data:/data
+    environment:
+      - TZ=Asia/Shanghai

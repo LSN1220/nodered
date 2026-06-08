@@ -1,0 +1,218 @@
+[
+  {
+    "id": "tab_mqtt_demo",
+    "type": "tab",
+    "label": "09 MQTT IoT Demo",
+    "disabled": false,
+    "info": "MQTT telemetry example: subscribe device messages, normalize payload, save latest state, and emit high temperature alerts."
+  },
+  {
+    "id": "mqtt_broker_local",
+    "type": "mqtt-broker",
+    "name": "Local Mosquitto",
+    "broker": "mqtt",
+    "port": "1883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": "",
+    "willMsg": {},
+    "userProps": "",
+    "sessionExpiry": ""
+  },
+  {
+    "id": "mqtt_telemetry_in",
+    "type": "mqtt in",
+    "z": "tab_mqtt_demo",
+    "name": "devices/+/telemetry",
+    "topic": "devices/+/telemetry",
+    "qos": "0",
+    "datatype": "auto-detect",
+    "broker": "mqtt_broker_local",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 170,
+    "y": 100,
+    "wires": [
+      [
+        "json_parse_telemetry"
+      ]
+    ]
+  },
+  {
+    "id": "json_parse_telemetry",
+    "type": "json",
+    "z": "tab_mqtt_demo",
+    "name": "Parse telemetry JSON",
+    "property": "payload",
+    "action": "",
+    "pretty": false,
+    "x": 420,
+    "y": 100,
+    "wires": [
+      [
+        "fn_normalize_telemetry"
+      ]
+    ]
+  },
+  {
+    "id": "fn_normalize_telemetry",
+    "type": "function",
+    "z": "tab_mqtt_demo",
+    "name": "Normalize telemetry",
+    "func": "const parts = msg.topic.split(\"/\");\nconst deviceSn = parts[1];\nconst payload = msg.payload || {};\n\nif (typeof payload.temperature !== \"number\") {\n    node.warn(`Invalid telemetry from ${deviceSn}: temperature is required`);\n    return null;\n}\n\nconst normalized = {\n    deviceSn,\n    temperature: payload.temperature,\n    humidity: payload.humidity ?? null,\n    receivedAt: new Date().toISOString()\n};\n\nconst latest = flow.get(\"latestTelemetry\") || {};\nlatest[deviceSn] = normalized;\nflow.set(\"latestTelemetry\", latest);\n\nmsg.payload = normalized;\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 680,
+    "y": 100,
+    "wires": [
+      [
+        "debug_normalized",
+        "switch_temperature_alert"
+      ]
+    ]
+  },
+  {
+    "id": "debug_normalized",
+    "type": "debug",
+    "z": "tab_mqtt_demo",
+    "name": "Normalized telemetry",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 960,
+    "y": 60,
+    "wires": []
+  },
+  {
+    "id": "switch_temperature_alert",
+    "type": "switch",
+    "z": "tab_mqtt_demo",
+    "name": "temperature >= 37",
+    "property": "payload.temperature",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "gte",
+        "v": "37",
+        "vt": "num"
+      }
+    ],
+    "checkall": "true",
+    "repair": false,
+    "outputs": 1,
+    "x": 960,
+    "y": 140,
+    "wires": [
+      [
+        "fn_build_alert"
+      ]
+    ]
+  },
+  {
+    "id": "fn_build_alert",
+    "type": "function",
+    "z": "tab_mqtt_demo",
+    "name": "Build alert",
+    "func": "msg.payload = {\n    level: \"warning\",\n    deviceSn: msg.payload.deviceSn,\n    message: \"Temperature is too high\",\n    temperature: msg.payload.temperature,\n    createdAt: new Date().toISOString()\n};\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 1190,
+    "y": 140,
+    "wires": [
+      [
+        "debug_alert"
+      ]
+    ]
+  },
+  {
+    "id": "debug_alert",
+    "type": "debug",
+    "z": "tab_mqtt_demo",
+    "name": "Alert output",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1400,
+    "y": 140,
+    "wires": []
+  },
+  {
+    "id": "http_latest_in",
+    "type": "http in",
+    "z": "tab_mqtt_demo",
+    "name": "GET /api/iot/latest",
+    "url": "/api/iot/latest",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 180,
+    "y": 260,
+    "wires": [
+      [
+        "fn_latest_state"
+      ]
+    ]
+  },
+  {
+    "id": "fn_latest_state",
+    "type": "function",
+    "z": "tab_mqtt_demo",
+    "name": "Read latest telemetry",
+    "func": "msg.payload = {\n    success: true,\n    data: flow.get(\"latestTelemetry\") || {}\n};\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 450,
+    "y": 260,
+    "wires": [
+      [
+        "http_latest_response"
+      ]
+    ]
+  },
+  {
+    "id": "http_latest_response",
+    "type": "http response",
+    "z": "tab_mqtt_demo",
+    "name": "Latest response",
+    "statusCode": "",
+    "headers": {},
+    "x": 700,
+    "y": 260,
+    "wires": []
+  }
+]

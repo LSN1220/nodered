@@ -1,0 +1,166 @@
+[
+  {
+    "id": "tab_http_demo",
+    "type": "tab",
+    "label": "08 HTTP API Demo",
+    "disabled": false,
+    "info": "HTTP API examples: health check, JSON body parsing, validation, and flow context."
+  },
+  {
+    "id": "http_health_in",
+    "type": "http in",
+    "z": "tab_http_demo",
+    "name": "GET /api/health",
+    "url": "/api/health",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 150,
+    "y": 80,
+    "wires": [
+      [
+        "fn_health"
+      ]
+    ]
+  },
+  {
+    "id": "fn_health",
+    "type": "function",
+    "z": "tab_http_demo",
+    "name": "Build health response",
+    "func": "msg.payload = {\n    success: true,\n    service: \"nodered-http-flow-demo\",\n    timestamp: new Date().toISOString()\n};\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 410,
+    "y": 80,
+    "wires": [
+      [
+        "http_health_response"
+      ]
+    ]
+  },
+  {
+    "id": "http_health_response",
+    "type": "http response",
+    "z": "tab_http_demo",
+    "name": "200 JSON",
+    "statusCode": "",
+    "headers": {},
+    "x": 650,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "http_device_in",
+    "type": "http in",
+    "z": "tab_http_demo",
+    "name": "POST /api/devices",
+    "url": "/api/devices",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 160,
+    "y": 180,
+    "wires": [
+      [
+        "json_parse_device"
+      ]
+    ]
+  },
+  {
+    "id": "json_parse_device",
+    "type": "json",
+    "z": "tab_http_demo",
+    "name": "Parse JSON body",
+    "property": "payload",
+    "action": "",
+    "pretty": false,
+    "x": 390,
+    "y": 180,
+    "wires": [
+      [
+        "fn_validate_device"
+      ]
+    ]
+  },
+  {
+    "id": "fn_validate_device",
+    "type": "function",
+    "z": "tab_http_demo",
+    "name": "Validate and count devices",
+    "func": "const device = msg.payload;\n\nif (!device || !device.sn || !device.name || !device.type) {\n    msg.statusCode = 400;\n    msg.payload = {\n        success: false,\n        message: \"sn, name, and type are required\"\n    };\n    return msg;\n}\n\nconst count = flow.get(\"createdDeviceCount\") || 0;\nflow.set(\"createdDeviceCount\", count + 1);\nflow.set(\"lastDevice\", device);\n\nmsg.statusCode = 201;\nmsg.payload = {\n    success: true,\n    data: {\n        sn: device.sn,\n        name: device.name,\n        type: device.type\n    },\n    createdDeviceCount: count + 1\n};\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 650,
+    "y": 180,
+    "wires": [
+      [
+        "http_device_response"
+      ]
+    ]
+  },
+  {
+    "id": "http_device_response",
+    "type": "http response",
+    "z": "tab_http_demo",
+    "name": "Device response",
+    "statusCode": "",
+    "headers": {},
+    "x": 910,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "http_count_in",
+    "type": "http in",
+    "z": "tab_http_demo",
+    "name": "GET /api/context/count",
+    "url": "/api/context/count",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 180,
+    "y": 280,
+    "wires": [
+      [
+        "fn_context_count"
+      ]
+    ]
+  },
+  {
+    "id": "fn_context_count",
+    "type": "function",
+    "z": "tab_http_demo",
+    "name": "Read flow context",
+    "func": "msg.payload = {\n    success: true,\n    createdDeviceCount: flow.get(\"createdDeviceCount\") || 0,\n    lastDevice: flow.get(\"lastDevice\") || null\n};\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 450,
+    "y": 280,
+    "wires": [
+      [
+        "http_count_response"
+      ]
+    ]
+  },
+  {
+    "id": "http_count_response",
+    "type": "http response",
+    "z": "tab_http_demo",
+    "name": "Context response",
+    "statusCode": "",
+    "headers": {},
+    "x": 690,
+    "y": 280,
+    "wires": []
+  }
+]

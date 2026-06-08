@@ -1,0 +1,10 @@
+services:
+  nodered:
+    image: nodered/node-red:3.1.11
+    container_name: nodered-http-flow-demo
+    ports:
+      - "1881:1880"
+    volumes:
+      - ./data:/data
+    environment:
+      - TZ=Asia/Shanghai

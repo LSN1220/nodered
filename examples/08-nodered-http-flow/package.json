@@ -1,0 +1,18 @@
+{
+  "name": "08-nodered-http-flow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable Node-RED HTTP flow example with Docker Compose.",
+  "main": "scripts/verify-flows.js",
+  "scripts": {
+    "verify": "node scripts/verify-flows.js"
+  },
+  "keywords": [
+    "node-red",
+    "http",
+    "docker-compose",
+    "learning"
+  ],
+  "author": "",
+  "license": "MIT"
+}

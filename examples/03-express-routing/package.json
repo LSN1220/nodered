@@ -5,7 +5,8 @@
   "description": "Runnable Express routing examples for beginners.",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "smoke": "node src/smoke-test.js"
   },
   "keywords": [
     "express",

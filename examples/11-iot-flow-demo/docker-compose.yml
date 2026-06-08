@@ -1,0 +1,34 @@
+services:
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    container_name: iot-flow-demo-mqtt
+    ports:
+      - "1893:1883"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  api:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    container_name: iot-flow-demo-api
+    ports:
+      - "3020:3020"
+    volumes:
+      - ./app/data:/app/data
+    environment:
+      - PORT=3020
+      - NODE_ENV=development
+
+  nodered:
+    image: nodered/node-red:3.1.11
+    container_name: iot-flow-demo-nodered
+    depends_on:
+      - mqtt
+      - api
+    ports:
+      - "1890:1880"
+    volumes:
+      - ./nodered-data:/data
+    environment:
+      - TZ=Asia/Shanghai

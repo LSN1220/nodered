@@ -368,7 +368,7 @@ examples/
 
 ## 10. 第一批优先生成的样例项目
 
-后续如果继续让我生成样例，建议按以下顺序开始：
+当前已经生成并验证通过的样例：
 
 1. `01-js-basics`
    - 变量、函数、对象、数组、模块拆分
@@ -380,12 +380,29 @@ examples/
    - 中间件、日志、错误处理、统一响应
 5. `05-express-crud-with-db`
    - 基础 CRUD、分页、过滤、数据库连接
-6. `08-nodered-http-flow`
+
+当前已经生成并验证通过的数据库建模样例：
+
+6. `06-db-schema-admin`
+   - 用户、角色、权限、菜单、多对多关系、约束、索引
+7. `07-db-schema-iot`
+   - 设备类型、设备实例、设备状态、设备事件、告警规则、告警记录
+
+当前已经生成并验证通过的 Node-RED 样例：
+
+8. `08-nodered-http-flow`
    - HTTP 输入输出、Function 节点、上下文
-7. `09-nodered-mqtt-flow`
+9. `09-nodered-mqtt-flow`
    - MQTT 接入、设备消息解析、告警判断
 
-这样可以先把基础打稳，再逐步进入两个主线项目。
+这样基础、Express、数据库建模、Node-RED HTTP、Node-RED MQTT 都已经形成了第一条完整学习链路。下一步可以进入两个主线项目：
+
+10. `10-admin-api-demo`
+    - 管理后台 API 小项目
+11. `11-iot-flow-demo`
+    - 物联网数据平台小项目
+
+其中 `10-admin-api-demo` 已经生成并通过 smoke 验证，覆盖登录、用户 CRUD、角色、权限和操作日志。`11-iot-flow-demo` 已经生成并通过 smoke、flow JSON、compose 配置验证，覆盖 Node-RED、MQTT、Express、SQLite、设备数据入库和告警记录。
 
 ---
 
@@ -439,4 +456,3 @@ examples/
 - 管理后台 API 项目
 - 物联网数据平台项目
 - 数据库设计稿与 SQL 示例
-

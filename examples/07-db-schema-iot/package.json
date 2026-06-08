@@ -1,0 +1,24 @@
+{
+  "name": "07-db-schema-iot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable IoT database schema examples with SQLite.",
+  "main": "src/demo.js",
+  "scripts": {
+    "seed": "node src/seed.js",
+    "start": "node src/demo.js",
+    "smoke": "node src/smoke-test.js"
+  },
+  "keywords": [
+    "database",
+    "schema",
+    "iot",
+    "devices",
+    "learning"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.8.1"
+  }
+}

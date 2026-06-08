@@ -1,0 +1,25 @@
+{
+  "name": "05-express-crud-with-db",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable Express CRUD API with SQLite for beginners.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "seed": "node src/scripts/seed.js",
+    "smoke": "node src/smoke-test.js"
+  },
+  "keywords": [
+    "express",
+    "crud",
+    "sqlite",
+    "database",
+    "learning"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2"
+  }
+}

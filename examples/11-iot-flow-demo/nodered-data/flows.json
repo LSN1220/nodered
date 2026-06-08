@@ -1,0 +1,210 @@
+[
+  {
+    "id": "tab_iot_flow_demo",
+    "type": "tab",
+    "label": "11 IoT Flow Demo",
+    "disabled": false,
+    "info": "Subscribe MQTT telemetry, normalize messages, and forward data to the Express API."
+  },
+  {
+    "id": "mqtt_broker_iot_demo",
+    "type": "mqtt-broker",
+    "name": "IoT Flow Demo Mosquitto",
+    "broker": "mqtt",
+    "port": "1883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": "",
+    "willMsg": {},
+    "userProps": "",
+    "sessionExpiry": ""
+  },
+  {
+    "id": "mqtt_telemetry_in",
+    "type": "mqtt in",
+    "z": "tab_iot_flow_demo",
+    "name": "devices/+/telemetry",
+    "topic": "devices/+/telemetry",
+    "qos": "0",
+    "datatype": "auto-detect",
+    "broker": "mqtt_broker_iot_demo",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 170,
+    "y": 100,
+    "wires": [
+      [
+        "json_parse_telemetry"
+      ]
+    ]
+  },
+  {
+    "id": "json_parse_telemetry",
+    "type": "json",
+    "z": "tab_iot_flow_demo",
+    "name": "Parse telemetry JSON",
+    "property": "payload",
+    "action": "",
+    "pretty": false,
+    "x": 420,
+    "y": 100,
+    "wires": [
+      [
+        "fn_normalize_telemetry"
+      ]
+    ]
+  },
+  {
+    "id": "fn_normalize_telemetry",
+    "type": "function",
+    "z": "tab_iot_flow_demo",
+    "name": "Normalize telemetry",
+    "func": "const parts = msg.topic.split(\"/\");\nconst deviceSn = parts[1];\nconst payload = msg.payload || {};\n\nif (!deviceSn || typeof payload.temperature !== \"number\") {\n    node.warn(\"Invalid telemetry payload\");\n    return null;\n}\n\nmsg.payload = {\n    deviceSn,\n    temperature: payload.temperature,\n    humidity: payload.humidity ?? null,\n    recordedAt: new Date().toISOString()\n};\n\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 670,
+    "y": 100,
+    "wires": [
+      [
+        "http_post_telemetry",
+        "debug_normalized"
+      ]
+    ]
+  },
+  {
+    "id": "http_post_telemetry",
+    "type": "http request",
+    "z": "tab_iot_flow_demo",
+    "name": "POST API /internal/telemetry",
+    "method": "POST",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "http://api:3020/internal/telemetry",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [
+      {
+        "keyType": "Content-Type",
+        "keyValue": "",
+        "valueType": "application/json",
+        "valueValue": ""
+      }
+    ],
+    "x": 960,
+    "y": 100,
+    "wires": [
+      [
+        "debug_api_response"
+      ]
+    ]
+  },
+  {
+    "id": "debug_normalized",
+    "type": "debug",
+    "z": "tab_iot_flow_demo",
+    "name": "Normalized telemetry",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 960,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "debug_api_response",
+    "type": "debug",
+    "z": "tab_iot_flow_demo",
+    "name": "API response",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1230,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "http_latest_in",
+    "type": "http in",
+    "z": "tab_iot_flow_demo",
+    "name": "GET /api/latest",
+    "url": "/api/latest",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 160,
+    "y": 240,
+    "wires": [
+      [
+        "http_get_latest"
+      ]
+    ]
+  },
+  {
+    "id": "http_get_latest",
+    "type": "http request",
+    "z": "tab_iot_flow_demo",
+    "name": "GET API latest",
+    "method": "GET",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "http://api:3020/telemetry/latest",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [],
+    "x": 410,
+    "y": 240,
+    "wires": [
+      [
+        "http_latest_response"
+      ]
+    ]
+  },
+  {
+    "id": "http_latest_response",
+    "type": "http response",
+    "z": "tab_iot_flow_demo",
+    "name": "Latest response",
+    "statusCode": "",
+    "headers": {},
+    "x": 650,
+    "y": 240,
+    "wires": []
+  }
+]

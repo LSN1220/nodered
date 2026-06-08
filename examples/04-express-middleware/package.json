@@ -1,0 +1,22 @@
+{
+  "name": "04-express-middleware",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable Express middleware examples for beginners.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "smoke": "node src/smoke-test.js"
+  },
+  "keywords": [
+    "express",
+    "middleware",
+    "errors",
+    "learning"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
